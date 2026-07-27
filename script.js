@@ -120,6 +120,30 @@
   /* ---------- Booking form -> live calendar ---------- */
   var BOOKING_ENDPOINT = "https://script.google.com/macros/s/AKfycbzOKfhOsh8c7P_x21M0F6-eEXE_Rmt2lX2oXR_StaYyvPWElu30CW0-ML_w4NEsuqzeQQ/exec";
   var RECAPTCHA_SITE_KEY = "6LcSkWUtAAAAACM55qbeldDlDK0Q2pICRfijnh-o";
+  var STUDIO_TZ = "America/New_York";
+
+  /* The studio's calendar always runs on America/New_York regardless of a
+     visitor's browser timezone. These convert between that fixed zone and
+     UTC so availability shown client-side matches what the server (which
+     always runs in the studio's timezone) will actually book. */
+  function nyOffsetHours(dateStr) {
+    var refUTC = new Date(dateStr + "T12:00:00Z");
+    var parts = new Intl.DateTimeFormat("en-US", { timeZone: STUDIO_TZ, timeZoneName: "short", hour: "2-digit" }).formatToParts(refUTC);
+    var tzName = parts.find(function (p) { return p.type === "timeZoneName"; });
+    return (tzName && tzName.value === "EDT") ? 4 : 5;
+  }
+
+  function nyWallTimeToUTC(dateStr, timeStr) {
+    return new Date(Date.parse(dateStr + "T" + timeStr + ":00Z") + nyOffsetHours(dateStr) * 3600000);
+  }
+
+  function nyDateKey(date) {
+    var parts = {};
+    new Intl.DateTimeFormat("en-US", { timeZone: STUDIO_TZ, year: "numeric", month: "2-digit", day: "2-digit" })
+      .formatToParts(date)
+      .forEach(function (p) { parts[p.type] = p.value; });
+    return parts.year + "-" + parts.month + "-" + parts.day;
+  }
 
   var form = document.getElementById("booking-form");
   var statusEl = document.getElementById("bf-status");
@@ -132,6 +156,7 @@
   }
 
   var renderDaySchedule;
+  var renderCalendar;
   var dateInput = document.getElementById("bf-date");
   if (dateInput) {
     var today = new Date();
@@ -176,7 +201,7 @@
             json.busy.forEach(function (ev) {
               var evStart = new Date(ev.start);
               var evEnd = ev.end ? new Date(ev.end) : new Date(evStart.getTime() + 15 * 60000);
-              var dayKey = isoDate(evStart.getFullYear(), evStart.getMonth(), evStart.getDate());
+              var dayKey = nyDateKey(evStart);
               days[dayKey] = true;
               events.push({ start: evStart, end: evEnd, dayKey: dayKey });
             });
@@ -249,7 +274,7 @@
 
         daySchedSlots.querySelectorAll(".day-schedule-slot").forEach(function (btn) {
           var slotValue = btn.getAttribute("data-time");
-          var slotStart = new Date(dateKey + "T" + slotValue + ":00");
+          var slotStart = nyWallTimeToUTC(dateKey, slotValue);
           var slotEnd = new Date(slotStart.getTime() + 15 * 60000);
           var isBusy = dayEvents.some(function (ev) {
             return slotStart < ev.end && slotEnd > ev.start;
@@ -262,7 +287,7 @@
       });
     };
 
-    function renderCalendar() {
+    renderCalendar = function () {
       mcTitle.textContent = monthNames[viewMonth] + " " + viewYear;
       mcGrid.innerHTML = "";
       var firstDay = new Date(viewYear, viewMonth, 1).getDay();
@@ -315,7 +340,7 @@
           mcGrid.appendChild(cell);
         }
       });
-    }
+    };
 
     mcPrev.addEventListener("click", function () {
       viewMonth -= 1;
@@ -395,7 +420,14 @@
               submitBtn.disabled = false;
               if (result.ok) {
                 setStatus("ok", "✓ Booked for " + result.when + ". Check your email for confirmation!");
+                var bookedDateKey = dateVal;
                 form.reset();
+                if (typeof busyCache !== "undefined") {
+                  busyCache = {};
+                  busyEventsCache = {};
+                  if (typeof renderCalendar === "function") renderCalendar();
+                  if (bookedDateKey && typeof renderDaySchedule === "function") renderDaySchedule(bookedDateKey);
+                }
               } else {
                 setStatus("error", result.error || "Something went wrong — please try a different time.");
               }

@@ -23,7 +23,7 @@
       setStatus("pending", "Submitting your review…");
 
       grecaptcha.ready(function () {
-        grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: "booking" }).then(function (token) {
+        grecaptcha.execute(RECAPTCHA_SITE_KEY, { action: "review" }).then(function (token) {
           var payload = {
             action: "review",
             name: data.get("name"),

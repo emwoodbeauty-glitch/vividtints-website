@@ -229,9 +229,43 @@
       });
 
       cancelBtn.addEventListener("click", function () {
-        if (!confirm("Cancel this booking?\n\n" + bk.title + "\n" + fmtWhen(bk.start))) return;
-        deleteBooking(bk.id);
+        openCancelConfirm(bk, actionsTd, actionsWrap);
       });
+    });
+  }
+
+  function openCancelConfirm(bk, actionsTd, actionsWrap) {
+    actionsWrap.style.display = "none";
+
+    var confirmWrap = document.createElement("div");
+    confirmWrap.className = "edit-form";
+
+    var label = document.createElement("span");
+    label.textContent = "Cancel this booking?";
+    label.style.fontSize = "0.85rem";
+
+    var yesBtn = document.createElement("button");
+    yesBtn.className = "btn-danger";
+    yesBtn.textContent = "Yes, cancel it";
+
+    var noBtn = document.createElement("button");
+    noBtn.className = "btn-ghost";
+    noBtn.textContent = "No";
+
+    confirmWrap.appendChild(label);
+    confirmWrap.appendChild(yesBtn);
+    confirmWrap.appendChild(noBtn);
+    actionsTd.appendChild(confirmWrap);
+
+    noBtn.addEventListener("click", function () {
+      confirmWrap.remove();
+      actionsWrap.style.display = "";
+    });
+
+    yesBtn.addEventListener("click", function () {
+      yesBtn.disabled = true;
+      noBtn.disabled = true;
+      deleteBooking(bk.id);
     });
   }
 

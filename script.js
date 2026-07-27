@@ -38,6 +38,23 @@
   updateClock();
   window.setInterval(updateClock, 15000);
 
+  /* ---------- Booking time slots (15-min increments, 6am-5pm) ---------- */
+  var bfTime = document.getElementById("bf-time");
+  if (bfTime) {
+    for (var totalMin = 6 * 60; totalMin <= 17 * 60; totalMin += 15) {
+      var hh24 = Math.floor(totalMin / 60);
+      var mm = totalMin % 60;
+      var value = String(hh24).padStart(2, "0") + ":" + String(mm).padStart(2, "0");
+      var hh12 = hh24 % 12 || 12;
+      var ampmLabel = hh24 >= 12 ? "PM" : "AM";
+      var label = hh12 + ":" + String(mm).padStart(2, "0") + " " + ampmLabel;
+      var opt = document.createElement("option");
+      opt.value = value;
+      opt.textContent = label;
+      bfTime.appendChild(opt);
+    }
+  }
+
   /* ---------- Start menu ---------- */
   var startBtn = document.getElementById("start-btn");
   var startMenu = document.getElementById("start-menu");
@@ -114,11 +131,15 @@
     statusEl.setAttribute("data-state", state);
   }
 
+  var renderDaySchedule;
   var dateInput = document.getElementById("bf-date");
   if (dateInput) {
     var today = new Date();
     var iso = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, "0") + "-" + String(today.getDate()).padStart(2, "0");
     dateInput.setAttribute("min", iso);
+    dateInput.addEventListener("change", function () {
+      if (dateInput.value && typeof renderDaySchedule === "function") renderDaySchedule(dateInput.value);
+    });
   }
 
   /* ---------- Mini calendar (availability replica) ---------- */
@@ -134,6 +155,8 @@
     var viewYear = todayStart.getFullYear();
     var viewMonth = todayStart.getMonth();
     var busyCache = {};
+    var busyEventsCache = {};
+    var selectedDateKey = null;
 
     function isoDate(y, m, d) {
       return y + "-" + String(m + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0");
@@ -148,18 +171,96 @@
         .then(function (r) { return r.json(); })
         .then(function (json) {
           var days = {};
+          var events = [];
           if (json.ok && json.busy) {
             json.busy.forEach(function (ev) {
-              var d = new Date(ev.start);
-              var dayKey = isoDate(d.getFullYear(), d.getMonth(), d.getDate());
+              var evStart = new Date(ev.start);
+              var evEnd = ev.end ? new Date(ev.end) : new Date(evStart.getTime() + 15 * 60000);
+              var dayKey = isoDate(evStart.getFullYear(), evStart.getMonth(), evStart.getDate());
               days[dayKey] = true;
+              events.push({ start: evStart, end: evEnd, dayKey: dayKey });
             });
           }
           busyCache[key] = days;
+          busyEventsCache[key] = events;
           return days;
         })
         .catch(function () { return {}; });
     }
+
+    /* ---------- Day schedule (per-date slot availability) ---------- */
+    var daySchedule = document.getElementById("day-schedule");
+    var daySchedTitle = document.getElementById("day-schedule-title");
+    var daySchedSlots = document.getElementById("day-schedule-slots");
+
+    renderDaySchedule = function (dateKey) {
+      if (!daySchedule || !daySchedTitle || !daySchedSlots || !dateKey) return;
+      selectedDateKey = dateKey;
+      var d = new Date(dateKey + "T00:00:00");
+      var weekday = d.getDay();
+
+      daySchedule.hidden = false;
+      daySchedTitle.textContent = monthNames[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
+      daySchedSlots.innerHTML = "";
+
+      if (weekday === 1 || weekday === 2) {
+        var closedMsg = document.createElement("p");
+        closedMsg.className = "day-schedule-empty";
+        closedMsg.textContent = "Closed this day — please pick Wednesday through Sunday.";
+        daySchedSlots.appendChild(closedMsg);
+        return;
+      }
+
+      for (var totalMin = 6 * 60; totalMin <= 17 * 60; totalMin += 15) {
+        var hh24 = Math.floor(totalMin / 60);
+        var mm = totalMin % 60;
+        var slotValue = String(hh24).padStart(2, "0") + ":" + String(mm).padStart(2, "0");
+        var hh12 = hh24 % 12 || 12;
+        var ampmLabel = hh24 >= 12 ? "PM" : "AM";
+        var slotLabel = hh12 + ":" + String(mm).padStart(2, "0") + " " + ampmLabel;
+
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "day-schedule-slot";
+        btn.textContent = slotLabel;
+        btn.setAttribute("data-time", slotValue);
+
+        btn.addEventListener("click", function () {
+          if (this.disabled) return;
+          if (bfTime) {
+            bfTime.value = this.getAttribute("data-time");
+            bfTime.dispatchEvent(new Event("change"));
+          }
+          var prevSelected = daySchedSlots.querySelector(".day-schedule-slot--selected");
+          if (prevSelected) prevSelected.classList.remove("day-schedule-slot--selected");
+          this.classList.add("day-schedule-slot--selected");
+        });
+
+        daySchedSlots.appendChild(btn);
+      }
+
+      var key = d.getFullYear() + "-" + d.getMonth();
+      fetchBusyForMonth(d.getFullYear(), d.getMonth()).then(function () {
+        if (selectedDateKey !== dateKey) return;
+        var dayEvents = (busyEventsCache[key] || []).filter(function (ev) {
+          return ev.dayKey === dateKey;
+        });
+        if (!dayEvents.length) return;
+
+        daySchedSlots.querySelectorAll(".day-schedule-slot").forEach(function (btn) {
+          var slotValue = btn.getAttribute("data-time");
+          var slotStart = new Date(dateKey + "T" + slotValue + ":00");
+          var slotEnd = new Date(slotStart.getTime() + 15 * 60000);
+          var isBusy = dayEvents.some(function (ev) {
+            return slotStart < ev.end && slotEnd > ev.start;
+          });
+          if (isBusy) {
+            btn.classList.add("day-schedule-slot--busy");
+            btn.disabled = true;
+          }
+        });
+      });
+    };
 
     function renderCalendar() {
       mcTitle.textContent = monthNames[viewMonth] + " " + viewYear;
@@ -202,6 +303,8 @@
               if (dateInput) {
                 dateInput.value = chosen;
                 dateInput.dispatchEvent(new Event("change"));
+              } else {
+                renderDaySchedule(chosen);
               }
               var prevSelected = mcGrid.querySelector(".mini-cal-day--selected");
               if (prevSelected) prevSelected.classList.remove("mini-cal-day--selected");

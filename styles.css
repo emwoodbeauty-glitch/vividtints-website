@@ -554,6 +554,50 @@ main {
 .mini-cal-dot--busy { background: var(--hotmagenta); }
 .mini-cal-dot--closed { background: var(--gray-chrome); }
 
+.day-schedule {
+  border-top: 1px dashed var(--bevel-dark);
+  margin-top: 0.75rem;
+  padding-top: 0.6rem;
+}
+.day-schedule-title {
+  font-family: var(--font-chrome);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--ink);
+  margin: 0 0 0.4rem;
+}
+.day-schedule-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(4.5rem, 1fr));
+  gap: 0.3rem;
+  max-height: 10rem;
+  overflow-y: auto;
+}
+.day-schedule-slot {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  border: 1px solid var(--bevel-dark);
+  border-radius: 4px;
+  padding: 0.25rem 0.2rem;
+  text-align: center;
+  background: var(--paper-dim);
+  cursor: pointer;
+}
+.day-schedule-slot:hover { background: var(--acid-lime); }
+.day-schedule-slot--selected { outline: 2px solid var(--winxp-blue); outline-offset: -2px; font-weight: 700; }
+.day-schedule-slot--busy {
+  color: var(--gray-chrome);
+  background: transparent;
+  text-decoration: line-through;
+  cursor: not-allowed;
+}
+.day-schedule-empty {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--gray-chrome-dark);
+}
+
 /* ============================================================
    Booking form
    ============================================================ */

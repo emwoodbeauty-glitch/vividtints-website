@@ -358,6 +358,10 @@
           </div>
           <div class="mini-cal-grid" id="mini-cal-grid" role="grid" aria-label="Availability calendar"></div>
           <p class="mini-cal-legend"><span class="mini-cal-dot mini-cal-dot--open"></span> open <span class="mini-cal-dot mini-cal-dot--busy"></span> booked slots <span class="mini-cal-dot mini-cal-dot--closed"></span> closed</p>
+          <div class="day-schedule" id="day-schedule" hidden>
+            <p class="day-schedule-title" id="day-schedule-title"></p>
+            <div class="day-schedule-slots" id="day-schedule-slots"></div>
+          </div>
         </div>
         <form id="booking-form" class="booking-form">
           <div class="field" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden" aria-hidden="true">
@@ -416,7 +420,9 @@
           </div>
           <div class="field">
             <label for="bf-time">Time</label>
-            <input id="bf-time" name="time" type="time" min="06:00" max="17:00" required>
+            <select id="bf-time" name="time" required>
+              <option value="" disabled selected>Select a time</option>
+            </select>
           </div>
           <div class="field field--wide">
             <label for="bf-notes">Notes</label>

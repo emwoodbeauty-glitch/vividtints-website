@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VividTints — Vivid Color &amp; Custom Tints</title>
+<meta name="description" content="VividTints: vivid color, corrective color, and custom tints. Book your next look with Emily Wood.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chewy&family=Pixelify+Sans:wght@400..700&family=Jost:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script src="https://www.google.com/recaptcha/api.js?render=6LcSkWUtAAAAACM55qbeldDlDK0Q2pICRfijnh-o"></script>
+</head>
+<body>
+
+<!-- BOOT SCREEN -->
+<div id="boot-screen" class="boot-screen" role="status" aria-label="Loading VividTints">
+  <div class="boot-inner">
+    <img class="boot-logo" src="images/vividtints-logo.png" alt="VividTints">
+    <div class="boot-bar"><div class="boot-bar-fill"></div></div>
+    <p class="boot-text">Starting VividTints&hellip;</p>
+    <button class="boot-skip" id="boot-skip" type="button">Skip intro &raquo;</button>
+  </div>
+</div>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- DESKTOP -->
+<div class="desktop">
+
+  <main id="main">
+
+    <!-- HERO WINDOW -->
+    <section id="home" class="win win--hero" aria-labelledby="hero-title">
+      <header class="win-titlebar win-titlebar--magenta">
+        <span class="win-titlebar-label">
+          <span class="win-dot" aria-hidden="true"></span> VividTints.exe — Now Running
+        </span>
+        <span class="win-controls">
+          <button class="win-btn win-btn--min" type="button" aria-label="Minimize this section" aria-expanded="true">_</button>
+          <button class="win-btn" type="button" tabindex="-1" aria-hidden="true">&#9633;</button>
+          <button class="win-btn win-btn--close" type="button" tabindex="-1" aria-hidden="true">&times;</button>
+        </span>
+      </header>
+      <div class="win-body win-body--hero">
+        <p class="eyebrow">/ vivid color &middot; corrective color &middot; custom tints /</p>
+        <h1 id="hero-title" class="wordmark"><img src="images/vividtints-logo.png" alt="VividTints"></h1>
+        <p class="tagline">Color that doesn't ask permission.</p>
+        <p class="hero-sub">Bold, precise color work by Emily Wood — serving Pickerington, OH, one appointment at a time.</p>
+        <div class="hero-actions">
+          <a href="#book" class="btn btn--primary">&#9654; Book Now</a>
+          <a href="#gallery" class="btn btn--secondary">View Gallery</a>
+        </div>
+        <dl class="sysinfo">
+          <div><dt>Artist</dt><dd>Emily Wood</dd></div>
+          <div><dt>Specialty</dt><dd>Vivid &amp; corrective color</dd></div>
+          <div><dt>Status</dt><dd><span class="status-dot" aria-hidden="true"></span>Accepting new clients</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- ABOUT WINDOW -->
+    <section id="about" class="win" aria-labelledby="about-title">
+      <header class="win-titlebar win-titlebar--blue">
+        <span class="win-titlebar-label">&#128196; About.txt — Meet the Artist</span>
+        <span class="win-controls">
+          <button class="win-btn win-btn--min" type="button" aria-label="Minimize this section" aria-expanded="true">_</button>
+          <button class="win-btn" type="button" tabindex="-1" aria-hidden="true">&#9633;</button>
+          <button class="win-btn win-btn--close" type="button" tabindex="-1" aria-hidden="true">&times;</button>
+        </span>
+      </header>
+      <div class="win-body about-grid">
+        <figure class="photo-frame">
+          <img class="about-photo" src="images/emily_wood.png" alt="Emily Wood, owner and colorist at VividTints">
+          <figcaption>emily_wood.png</figcaption>
+        </figure>
+        <div class="about-copy">
+          <h2 id="about-title">Hi, I'm Emily.</h2>
+          <p>I'm a hair stylist with a passion for all things color! While I especially love exploring creative and vibrant hues, I'm equally dedicated to crafting beautiful, natural-looking color for every client. Whether you're dreaming of a bold transformation or a subtle enhancement, I'm here to bring your vision to life with precision and artistry. From classic blondes and rich brunettes to playful pastels and vivid rainbows, let's create a color that's perfect for you!</p>
+          <p>Please note my services are being offered to women only.</p>
+          <ul class="about-tags">
+            <li>Vivid &amp; Fantasy Color</li>
+            <li>Corrective color</li>
+            <li>Formulated for color-treated hair</li>
+            <li>Danger Jones Expert</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SERVICES WINDOW -->
+    <section id="services" class="win" aria-labelledby="services-title">
+      <header class="win-titlebar win-titlebar--lime">
+        <span class="win-titlebar-label">&#127912; Services.pal — Color Palette</span>
+        <span class="win-controls">
+          <button class="win-btn win-btn--min" type="button" aria-label="Minimize this section" aria-expanded="true">_</button>
+          <button class="win-btn" type="button" tabindex="-1" aria-hidden="true">&#9633;</button>
+          <button class="win-btn win-btn--close" type="button" tabindex="-1" aria-hidden="true">&times;</button>
+        </span>
+      </header>
+      <div class="win-body">
+        <h2 id="services-title" class="sr-only">Services and pricing</h2>
+        <div class="palette-strip" aria-hidden="true">
+          <span class="swatch" style="--sw:#FF2FB0"></span>
+          <span class="swatch" style="--sw:#C4FF3D"></span>
+          <span class="swatch" style="--sw:#FFD400"></span>
+          <span class="swatch" style="--sw:#0A5FCC"></span>
+          <span class="swatch" style="--sw:#38E1FF"></span>
+          <span class="swatch" style="--sw:#7A2FFF"></span>
+        </div>
+        <div class="price-table-scroll">
+        <table class="price-table">
+          <thead>
+            <tr><th scope="col">Service</th><th scope="col">Duration</th><th scope="col">Price</th></tr>
+          </thead>
+          <tbody>
+            <tr class="category-row"><th colspan="3" scope="colgroup">Coloring Services</th></tr>
+            <tr><td data-label="Service"><span class="chip" style="--sw:#FF2FB0"></span>Consultation</td><td data-label="Duration">15 min</td><td data-label="Price" class="price">$0 and up</td></tr>
+            <tr><td data-label="Service"><span class="chip" style="--sw:#C4FF3D"></span>Custom Creative Color</td><td data-label="Duration">3h</td><td data-label="Price" class="price">$75&ndash;$300</td></tr>
+            <tr><td data-label="Service"><span class="chip" style="--sw:#FFD400"></span>Balayage + Cut + Style</td><td data-label="Duration">3.5h</td><td data-label="Price" class="price">$180 and up</td></tr>
+            <tr><td data-label="Service"><span class="chip" style="--sw:#0A5FCC"></span>Full Highlights + Cut + Style</td><td data-label="Duration">3h</td><td data-label="Price" class="price">$140 and up</td></tr>
+            <tr><td data-label="Service"><span class="chip" style="--sw:#38E1FF"></span>Partial Highlights + Cut + Style</td><td data-label="Duration">2h</td><td data-label="Price" class="price">$110 and up</td></tr>
+            <tr><td data-label="Service"><span class="chip" style="--sw:#7A2FFF"></span>Face Framing Highlights</td><td data-label="Duration">1h</td><td data-label="Price" class="price">$70 and up</td></tr>
+            <tr><td data-label="Service"><span class="chip" style="--sw:#FF2FB0"></span>All Over Color + Cut + Style</td><td data-label="Duration">2h</td><td data-label="Price" class="price">$100 and up</td></tr>
+            <tr><td data-label="Service"><span class="chip" style="--sw:#C4FF3D"></span>Color Retouch + Cut + Style</td><td data-label="Duration">2h</td><td data-label="Price" class="price">$80 and up</td></tr>
+            <tr><td data-label="Service"><span class="chip" style="--sw:#FFD400"></span>All Over Color + Highlights + Cut + Style</td><td data-label="Duration">3.5h</td><td data-label="Price" class="price">$200 and up</td></tr>
+            <tr><td data-label="Service"><span class="chip" style="--sw:#0A5FCC"></span>Color Retouch + Highlights + Cut + Style</td><td data-label="Duration">3.5h</td><td data-label="Price" class="price">$180 and up</td></tr>
+            <tr><td data-label="Service"><span class="chip" style="--sw:#38E1FF"></span>Platinum Blonde</td><td data-label="Duration">3h</td><td data-label="Price" class="price">$75&ndash;$300</td></tr>
+            <tr><td data-label="Service"><span class="chip" style="--sw:#7A2FFF"></span>Corrective Color</td><td data-label="Duration">4h</td><td data-label="Price" class="price">$100&ndash;$300</td></tr>
+            <tr><td data-label="Service"><span class="chip" style="--sw:#FF2FB0"></span>Hair Gloss</td><td data-label="Duration">1h</td><td data-label="Price" class="price">$50 and up</td></tr>
+
+            <tr class="category-row"><th colspan="3" scope="colgroup">Haircuts &amp; Styles</th></tr>
+            <tr><td data-label="Service">Women's Cut &amp; Style</td><td data-label="Duration">45 min</td><td data-label="Price" class="price">$35 and up</td></tr>
+            <tr><td data-label="Service">Children's Cut &amp; Style</td><td data-label="Duration">30 min</td><td data-label="Price" class="price">$25 and up</td></tr>
+            <tr><td data-label="Service">Fairy Hair (Hair Tinsel)</td><td data-label="Duration">45 min</td><td data-label="Price" class="price">$25 and up</td></tr>
+            <tr><td data-label="Service">Shampoo &amp; Style</td><td data-label="Duration">30 min</td><td data-label="Price" class="price">$30 and up</td></tr>
+
+            <tr class="category-row"><th colspan="3" scope="colgroup">Extensions</th></tr>
+            <tr><td data-label="Service">Extension Maintenance</td><td data-label="Duration">3h</td><td data-label="Price" class="price">$150&ndash;$300</td></tr>
+            <tr><td data-label="Service">Extensions Consultation</td><td data-label="Duration">15 min</td><td data-label="Price" class="price">$99&ndash;$300</td></tr>
+
+            <tr class="category-row"><th colspan="3" scope="colgroup">Formal Design</th></tr>
+            <tr><td data-label="Service">Formal Styling Trial Run</td><td data-label="Duration">1h</td><td data-label="Price" class="price">$35 and up</td></tr>
+            <tr><td data-label="Service">Dances, Evening Event, Special Occasion</td><td data-label="Duration">1h</td><td data-label="Price" class="price">$50 and up</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- GALLERY WINDOW -->
+    <section id="gallery" class="win" aria-labelledby="gallery-title">
+      <header class="win-titlebar win-titlebar--sun">
+        <span class="win-titlebar-label">&#128444; Gallery</span>
+        <span class="win-controls">
+          <button class="win-btn win-btn--min" type="button" aria-label="Minimize this section" aria-expanded="true">_</button>
+          <button class="win-btn" type="button" tabindex="-1" aria-hidden="true">&#9633;</button>
+          <button class="win-btn win-btn--close" type="button" tabindex="-1" aria-hidden="true">&times;</button>
+        </span>
+      </header>
+      <div class="win-body">
+        <h2 id="gallery-title" class="sr-only">Portfolio gallery</h2>
+        <div class="gallery-grid">
+          <figure class="mini-win"><header class="mini-win-bar"><span>pastel_rainbow.jpg</span></header><img class="gallery-photo" src="images/gallery-1-pastel-rainbow.jpg" alt="Pastel rainbow vivid color, back view" loading="lazy"></figure>
+          <figure class="mini-win"><header class="mini-win-bar"><span>purple_blue_ombre.jpg</span></header><img class="gallery-photo" src="images/gallery-2-purple-blue-ombre.jpg" alt="Purple to blue ombre curls" loading="lazy"></figure>
+          <figure class="mini-win"><header class="mini-win-bar"><span>pink_teal_vivid.jpg</span></header><img class="gallery-photo" src="images/gallery-3-pink-teal-vivid.jpg" alt="Pink and teal vivid color placement" loading="lazy"></figure>
+          <figure class="mini-win"><header class="mini-win-bar"><span>summer_solstice.jpg</span></header><img class="gallery-photo" src="images/gallery-4-summer-solstice-rainbow.jpg" alt="Rainbow vivid color, Summer Solstice look" loading="lazy"></figure>
+          <figure class="mini-win"><header class="mini-win-bar"><span>copper_blonde_balayage.jpg</span></header><img class="gallery-photo" src="images/gallery-5-copper-blonde-balayage.jpg" alt="Copper and blonde balayage dimension" loading="lazy"></figure>
+          <figure class="mini-win"><header class="mini-win-bar"><span>pink_hair_season.jpg</span></header><img class="gallery-photo" src="images/gallery-6-pink-hair-season.jpg" alt="Pink hair color melt from natural roots, back view" loading="lazy"></figure>
+        </div>
+        <p class="table-note">Photos pulled from <a href="https://www.instagram.com/emwood005/" target="_blank" rel="noopener">@emwood005</a> on Instagram — swap any of the six files in <code>/images</code> for new work anytime.</p>
+      </div>
+    </section>
+
+    <!-- PRODUCTS WINDOW -->
+    <section id="products" class="win" aria-labelledby="products-title">
+      <header class="win-titlebar win-titlebar--lime">
+        <span class="win-titlebar-label">&#128717; Products.exe — Retail Shop</span>
+        <span class="win-controls">
+          <button class="win-btn win-btn--min" type="button" aria-label="Minimize this section" aria-expanded="true">_</button>
+          <button class="win-btn" type="button" tabindex="-1" aria-hidden="true">&#9633;</button>
+          <button class="win-btn win-btn--close" type="button" tabindex="-1" aria-hidden="true">&times;</button>
+        </span>
+      </header>
+      <div class="win-body">
+        <h2 id="products-title" class="sr-only">Retail products</h2>
+        <p class="table-note">Take the color home with you — professional retail products, shipped straight from VividTints' online store.</p>
+        <div class="product-grid">
+          <article class="mini-win product-card">
+            <header class="mini-win-bar"><span>foodforsoft_shampoo.jpg</span></header>
+            <a href="https://shop.saloninteractive.com/store/vivid-tints-94737/product/79446/83007" target="_blank" rel="noopener">
+              <img class="product-photo" src="images/product-foodforsoft-shampoo.jpg" alt="Matrix Food For Soft Hydrating Shampoo, 10.1 fl oz">
+            </a>
+            <div class="product-info">
+              <p class="product-brand">Matrix</p>
+              <h3 class="product-name">Food For Soft Hydrating Shampoo</h3>
+              <a class="btn btn--secondary product-buy" href="https://shop.saloninteractive.com/store/vivid-tints-94737/product/79446/83007" target="_blank" rel="noopener">Shop Now</a>
+            </div>
+          </article>
+          <article class="mini-win product-card">
+            <header class="mini-win-bar"><span>foodforsoft_conditioner.jpg</span></header>
+            <a href="https://shop.saloninteractive.com/store/vivid-tints-94737/product/79444/83005" target="_blank" rel="noopener">
+              <img class="product-photo" src="images/product-foodforsoft-conditioner.jpg" alt="Matrix Food For Soft Detangling Hydrating Conditioner, 10.1 fl oz">
+            </a>
+            <div class="product-info">
+              <p class="product-brand">Matrix</p>
+              <h3 class="product-name">Food For Soft Hydrating Conditioner</h3>
+              <a class="btn btn--secondary product-buy" href="https://shop.saloninteractive.com/store/vivid-tints-94737/product/79444/83005" target="_blank" rel="noopener">Shop Now</a>
+            </div>
+          </article>
+          <article class="mini-win product-card">
+            <header class="mini-win-bar"><span>hydrorush_shampoo.jpg</span></header>
+            <a href="https://shop.saloninteractive.com/store/vivid-tints-94737/product/69103/72638" target="_blank" rel="noopener">
+              <img class="product-photo" src="images/product-hydrorush-shampoo.jpg" alt="amika Hydro Rush Intense Moisture Shampoo, 9.2 fl oz">
+            </a>
+            <div class="product-info">
+              <p class="product-brand">amika</p>
+              <h3 class="product-name">Hydro Rush Intense Moisture Shampoo</h3>
+              <a class="btn btn--secondary product-buy" href="https://shop.saloninteractive.com/store/vivid-tints-94737/product/69103/72638" target="_blank" rel="noopener">Shop Now</a>
+            </div>
+          </article>
+          <article class="mini-win product-card">
+            <header class="mini-win-bar"><span>hydrorush_conditioner.jpg</span></header>
+            <a href="https://shop.saloninteractive.com/store/vivid-tints-94737/product/69101/72635" target="_blank" rel="noopener">
+              <img class="product-photo" src="images/product-hydrorush-conditioner.jpg" alt="amika Hydro Rush Intense Moisture Conditioner, 9.2 fl oz">
+            </a>
+            <div class="product-info">
+              <p class="product-brand">amika</p>
+              <h3 class="product-name">Hydro Rush Intense Moisture Conditioner</h3>
+              <a class="btn btn--secondary product-buy" href="https://shop.saloninteractive.com/store/vivid-tints-94737/product/69101/72635" target="_blank" rel="noopener">Shop Now</a>
+            </div>
+          </article>
+          <article class="mini-win product-card">
+            <header class="mini-win-bar"><span>glowmania_shampoo.jpg</span></header>
+            <a href="https://shop.saloninteractive.com/store/vivid-tints-94737/product/101076/104954" target="_blank" rel="noopener">
+              <img class="product-photo" src="images/product-glowmania-shampoo.jpg" alt="Matrix Glow Mania Color Protecting Shampoo, 10.1 fl oz">
+            </a>
+            <div class="product-info">
+              <p class="product-brand">Matrix</p>
+              <h3 class="product-name">Glow Mania Color Protecting Shampoo</h3>
+              <a class="btn btn--secondary product-buy" href="https://shop.saloninteractive.com/store/vivid-tints-94737/product/101076/104954" target="_blank" rel="noopener">Shop Now</a>
+            </div>
+          </article>
+          <article class="mini-win product-card">
+            <header class="mini-win-bar"><span>glowmania_conditioner.jpg</span></header>
+            <a href="https://shop.saloninteractive.com/store/vivid-tints-94737/product/91095/94782" target="_blank" rel="noopener">
+              <img class="product-photo" src="images/product-glowmania-conditioner.jpg" alt="Matrix Glow Mania Color Protecting Conditioner, 10.1 fl oz">
+            </a>
+            <div class="product-info">
+              <p class="product-brand">Matrix</p>
+              <h3 class="product-name">Glow Mania Color Protecting Conditioner</h3>
+              <a class="btn btn--secondary product-buy" href="https://shop.saloninteractive.com/store/vivid-tints-94737/product/91095/94782" target="_blank" rel="noopener">Shop Now</a>
+            </div>
+          </article>
+          <article class="mini-win product-card">
+            <header class="mini-win-bar"><span>waxblast.jpg</span></header>
+            <a href="https://shop.saloninteractive.com/store/vivid-tints-94737/product/81811/85417" target="_blank" rel="noopener">
+              <img class="product-photo" src="images/product-waxblast.jpg" alt="Redken Wax Blast Spray Wax, 5.5 oz">
+            </a>
+            <div class="product-info">
+              <p class="product-brand">Redken</p>
+              <h3 class="product-name">Wax Blast Spray Wax</h3>
+              <a class="btn btn--secondary product-buy" href="https://shop.saloninteractive.com/store/vivid-tints-94737/product/81811/85417" target="_blank" rel="noopener">Shop Now</a>
+            </div>
+          </article>
+          <article class="mini-win product-card">
+            <header class="mini-win-bar"><span>thewizard.jpg</span></header>
+            <a href="https://shop.saloninteractive.com/store/vivid-tints-94737/product/91083/75434" target="_blank" rel="noopener">
+              <img class="product-photo" src="images/product-thewizard.webp" alt="amika The Wizard Silicone-Free Detangling Primer, 5 fl oz">
+            </a>
+            <div class="product-info">
+              <p class="product-brand">amika</p>
+              <h3 class="product-name">The Wizard Detangling Primer</h3>
+              <a class="btn btn--secondary product-buy" href="https://shop.saloninteractive.com/store/vivid-tints-94737/product/91083/75434" target="_blank" rel="noopener">Shop Now</a>
+            </div>
+          </article>
+          <article class="mini-win product-card">
+            <header class="mini-win-bar"><span>k18mask.jpg</span></header>
+            <a href="https://shop.saloninteractive.com/store/vivid-tints-94737/product/55356/58825" target="_blank" rel="noopener">
+              <img class="product-photo" src="images/product-k18mask.webp" alt="K18 Leave-In Molecular Repair Hair Mask, 1.7 fl oz">
+            </a>
+            <div class="product-info">
+              <p class="product-brand">K18</p>
+              <h3 class="product-name">Leave-In Molecular Repair Hair Mask</h3>
+              <a class="btn btn--secondary product-buy" href="https://shop.saloninteractive.com/store/vivid-tints-94737/product/55356/58825" target="_blank" rel="noopener">Shop Now</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- REVIEWS WINDOW -->
+    <section id="reviews" class="win" aria-labelledby="reviews-title">
+      <header class="win-titlebar win-titlebar--gray">
+        <span class="win-titlebar-label">&#128221; Reviews.txt — Notepad</span>
+        <span class="win-controls">
+          <button class="win-btn win-btn--min" type="button" aria-label="Minimize this section" aria-expanded="true">_</button>
+          <button class="win-btn" type="button" tabindex="-1" aria-hidden="true">&#9633;</button>
+          <button class="win-btn win-btn--close" type="button" tabindex="-1" aria-hidden="true">&times;</button>
+        </span>
+      </header>
+      <div class="win-body">
+        <h2 id="reviews-title" class="sr-only">Client reviews</h2>
+        <div class="notepad" id="notepad-reviews">
+          <p class="notepad-line">"She's amazing! Super nice, easy to talk to, extremely knowledgeable and crushes creative colors! She exceeded my expectations in every way! 10/10" &mdash; <em>Amanda L.</em></p>
+          <p class="notepad-line">"I loved my service from Emily!! She listened to my concerns and made sure to prioritize me during my appointment! The hair turned out fantastic and much healthier than when I walked in, I definitely 10/10 recommend!!" &mdash; <em>Mariah P.</em></p>
+          <p class="notepad-line">"I have been looking for someone to do creative colors with my black hair. She is amazing. She is really nice and understanding. She explained every step to me in detail. Her salon space is nice and peaceful. I will definitely be back and will 100% refer her to anyone. Thank you so much for giving me exactly what I asked for." &mdash; <em>Sally L.</em></p>
+          <p class="notepad-line">"From the consult to the actual appointment Emily was absolutely wonderful! Having used box dye on my hair months ago I knew I needed help. Badly. After an unsuccessful trip somewhere else I landed in Emily's chair and I couldn't be happier that I did! She is so knowledgeable and does a great job explaining what all she does and will do with your hair. I already booked a follow up! :)" &mdash; <em>Michelle W.</em></p>
+          <span class="notepad-cursor" aria-hidden="true"></span>
+        </div>
+        <a href="reviews.html" class="btn btn--secondary">&#128221; Leave a Review</a>
+      </div>
+    </section>
+
+    <!-- POLICIES: SYSTEM MESSAGE DIALOG -->
+    <section id="policies" class="win win--dialog" aria-labelledby="policies-title">
+      <header class="win-titlebar win-titlebar--warn">
+        <span class="win-titlebar-label">&#9888; System Message</span>
+        <span class="win-controls" aria-hidden="true">
+          <button class="win-btn" type="button" tabindex="-1">&times;</button>
+        </span>
+      </header>
+      <div class="win-body win-body--dialog">
+        <h2 id="policies-title" class="sr-only">Studio policies</h2>
+        <div class="dialog-content">
+          <span class="dialog-icon" aria-hidden="true">&#9888;</span>
+          <ul class="policy-list">
+            <li>Please arrive on time — late arrivals past 15 minutes may need to reschedule.</li>
+            <li>First-time vivid color clients may require a strand or patch test before service.</li>
+            <li>Color results vary based on hair history — full transparency happens at consultation.</li>
+          </ul>
+          <button class="btn btn--ok" type="button" id="policy-ok">OK</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- BOOK NOW WINDOW -->
+    <section id="book" class="win" aria-labelledby="book-title">
+      <header class="win-titlebar win-titlebar--magenta">
+        <span class="win-titlebar-label">&#128197; Book Now</span>
+        <span class="win-controls">
+          <button class="win-btn win-btn--min" type="button" aria-label="Minimize this section" aria-expanded="true">_</button>
+          <button class="win-btn" type="button" tabindex="-1" aria-hidden="true">&#9633;</button>
+          <button class="win-btn win-btn--close" type="button" tabindex="-1" aria-hidden="true">&times;</button>
+        </span>
+      </header>
+      <div class="win-body">
+        <h2 id="book-title" class="sr-only">Book an appointment</h2>
+        <p class="table-note">Pick a service and time — this books directly onto Emily's calendar (Wed&ndash;Sun, 6:00 AM&ndash;5:00 PM) and blocks the exact length of that service. You'll both get an email confirmation right away.</p>
+        <div class="mini-cal" id="mini-cal">
+          <div class="mini-cal-header">
+            <button type="button" class="mini-cal-nav" id="mini-cal-prev" aria-label="Previous month">&#9664;</button>
+            <span class="mini-cal-title" id="mini-cal-title" aria-live="polite"></span>
+            <button type="button" class="mini-cal-nav" id="mini-cal-next" aria-label="Next month">&#9654;</button>
+          </div>
+          <div class="mini-cal-weekdays">
+            <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
+          </div>
+          <div class="mini-cal-grid" id="mini-cal-grid" role="grid" aria-label="Availability calendar"></div>
+          <p class="mini-cal-legend"><span class="mini-cal-dot mini-cal-dot--open"></span> open <span class="mini-cal-dot mini-cal-dot--busy"></span> booked slots <span class="mini-cal-dot mini-cal-dot--closed"></span> closed</p>
+        </div>
+        <form id="booking-form" class="booking-form">
+          <div class="field" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden" aria-hidden="true">
+            <label for="bf-website">Website</label>
+            <input id="bf-website" name="website" type="text" tabindex="-1" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="bf-name">Name</label>
+            <input id="bf-name" name="name" type="text" autocomplete="name" required>
+          </div>
+          <div class="field">
+            <label for="bf-email">Email</label>
+            <input id="bf-email" name="email" type="email" autocomplete="email" required>
+          </div>
+          <div class="field">
+            <label for="bf-phone">Phone</label>
+            <input id="bf-phone" name="phone" type="tel" autocomplete="tel">
+          </div>
+          <div class="field">
+            <label for="bf-service">Service</label>
+            <select id="bf-service" name="service" required>
+              <optgroup label="Coloring Services">
+                <option value="Consultation" data-duration="15">Consultation — 15 min</option>
+                <option value="Custom Creative Color" data-duration="180">Custom Creative Color — 3h</option>
+                <option value="Balayage + Cut + Style" data-duration="210">Balayage + Cut + Style — 3.5h</option>
+                <option value="Full Highlights + Cut + Style" data-duration="180">Full Highlights + Cut + Style — 3h</option>
+                <option value="Partial Highlights + Cut + Style" data-duration="120">Partial Highlights + Cut + Style — 2h</option>
+                <option value="Face Framing Highlights" data-duration="60">Face Framing Highlights — 1h</option>
+                <option value="All Over Color + Cut + Style" data-duration="120">All Over Color + Cut + Style — 2h</option>
+                <option value="Color Retouch + Cut + Style" data-duration="120">Color Retouch + Cut + Style — 2h</option>
+                <option value="All Over Color + Highlights + Cut + Style" data-duration="210">All Over Color + Highlights + Cut + Style — 3.5h</option>
+                <option value="Color Retouch + Highlights + Cut + Style" data-duration="210">Color Retouch + Highlights + Cut + Style — 3.5h</option>
+                <option value="Platinum Blonde" data-duration="180">Platinum Blonde — 3h</option>
+                <option value="Corrective Color" data-duration="240">Corrective Color — 4h</option>
+                <option value="Hair Gloss" data-duration="60">Hair Gloss — 1h</option>
+              </optgroup>
+              <optgroup label="Haircuts &amp; Styles">
+                <option value="Women's Cut &amp; Style" data-duration="45">Women's Cut &amp; Style — 45 min</option>
+                <option value="Children's Cut &amp; Style" data-duration="30">Children's Cut &amp; Style — 30 min</option>
+                <option value="Fairy Hair (Hair Tinsel)" data-duration="45">Fairy Hair (Hair Tinsel) — 45 min</option>
+                <option value="Shampoo &amp; Style" data-duration="30">Shampoo &amp; Style — 30 min</option>
+              </optgroup>
+              <optgroup label="Extensions">
+                <option value="Extension Maintenance" data-duration="180">Extension Maintenance — 3h</option>
+                <option value="Extensions Consultation" data-duration="15">Extensions Consultation — 15 min</option>
+              </optgroup>
+              <optgroup label="Formal Design">
+                <option value="Formal Styling Trial Run" data-duration="60">Formal Styling Trial Run — 1h</option>
+                <option value="Dances, Evening Event, Special Occasion" data-duration="60">Dances, Evening Event, Special Occasion — 1h</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="field">
+            <label for="bf-date">Date</label>
+            <input id="bf-date" name="date" type="date" required>
+          </div>
+          <div class="field">
+            <label for="bf-time">Time</label>
+            <input id="bf-time" name="time" type="time" min="06:00" max="17:00" required>
+          </div>
+          <div class="field field--wide">
+            <label for="bf-notes">Notes</label>
+            <textarea id="bf-notes" name="notes" rows="3" placeholder="Current color, inspiration photos, anything I should know"></textarea>
+          </div>
+          <button class="btn btn--primary field--wide" type="submit" id="bf-submit">&#9654; Book Appointment</button>
+          <p class="recaptcha-disclosure field--wide">This site is protected by reCAPTCHA and the Google <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privacy Policy</a> and <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Terms of Service</a> apply.</p>
+          <p class="booking-status field--wide" id="bf-status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER: SHUT DOWN DIALOG -->
+  <footer id="contact" class="win win--dialog win--shutdown" aria-labelledby="shutdown-title">
+    <header class="win-titlebar win-titlebar--blue">
+      <span class="win-titlebar-label">Shut Down VividTints.exe</span>
+    </header>
+    <div class="win-body win-body--dialog">
+      <h2 id="shutdown-title" class="sr-only">Contact and location</h2>
+      <div class="dialog-content">
+        <span class="dialog-icon" aria-hidden="true">&#128421;</span>
+        <div class="shutdown-info">
+          <p>Are you sure you want to leave <strong>VividTints</strong>?</p>
+          <address class="contact-list">
+            <div><span class="contact-label">Studio;</span> <a href="https://maps.google.com/?q=10503+Blacklick+Eastern+Road,+Pickerington,+OH+43147" target="_blank" rel="noopener">10503 Blacklick Eastern Road, Pickerington, OH 43147</a></div>
+            <div><span class="contact-label">Hours:</span> 6:00 AM &ndash; 5:00 PM</div>
+            <div><span class="contact-label">Email:</span> <a href="mailto:emwoodbeauty@gmail.com">emwoodbeauty@gmail.com</a></div>
+            <div><span class="contact-label">Phone:</span> <a href="tel:+13802190424">380-219-0424</a></div>
+            <div><span class="contact-label">Instagram:</span> <a href="https://www.instagram.com/emwood005/" target="_blank" rel="noopener">@emwood005</a></div>
+          </address>
+        </div>
+        <div class="shutdown-actions">
+          <a href="#book" class="btn btn--ok">Book Now</a>
+          <a href="mailto:emwoodbeauty@gmail.com" class="btn">Email Instead</a>
+        </div>
+      </div>
+      <p class="fine-print">&copy; <span id="year"></span> VividTints. Built with love and a little bit of nostalgia.</p>
+    </div>
+  </footer>
+
+</div>
+
+<!-- TASKBAR -->
+<nav class="taskbar" aria-label="Primary">
+  <button class="start-btn" id="start-btn" aria-haspopup="true" aria-expanded="false" aria-controls="start-menu" type="button">
+    <span class="start-icon" aria-hidden="true">&#10047;</span> Start
+  </button>
+  <div class="taskbar-links" id="taskbar-links">
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#services">Services</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#products">Products</a>
+    <a href="#reviews">Reviews</a>
+    <a href="#policies">Policies</a>
+    <a href="#book">Book</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <time class="taskbar-clock" id="taskbar-clock" aria-hidden="true"></time>
+</nav>
+
+<div class="start-menu" id="start-menu" hidden>
+  <ul>
+    <li><a href="#home">&#127968; Home</a></li>
+    <li><a href="#about">&#128196; About</a></li>
+    <li><a href="#services">&#127912; Services</a></li>
+    <li><a href="#gallery">&#128444; Gallery</a></li>
+    <li><a href="#products">&#128717; Products</a></li>
+    <li><a href="#reviews">&#128221; Reviews</a></li>
+    <li><a href="#policies">&#9888; Policies</a></li>
+    <li><a href="#book">&#128197; Book Now</a></li>
+    <li><a href="#contact">&#128421; Contact</a></li>
+  </ul>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

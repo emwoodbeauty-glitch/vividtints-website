@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leave a Review — VividTints</title>
+<meta name="description" content="Leave a review for VividTints and Emily Wood.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chewy&family=Pixelify+Sans:wght@400..700&family=Jost:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<script src="https://www.google.com/recaptcha/api.js?render=6LcSkWUtAAAAACM55qbeldDlDK0Q2pICRfijnh-o"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- DESKTOP -->
+<div class="desktop">
+
+  <main id="main">
+
+    <!-- LEAVE A REVIEW WINDOW -->
+    <section id="leave-review" class="win win--dialog" aria-labelledby="review-title">
+      <header class="win-titlebar win-titlebar--gray">
+        <span class="win-titlebar-label">&#128221; NewReview.txt — Notepad</span>
+        <span class="win-controls">
+          <a class="win-btn win-btn--close" href="index.html#reviews" aria-label="Close and return to VividTints">&times;</a>
+        </span>
+      </header>
+      <div class="win-body win-body--dialog">
+        <h2 id="review-title">Leave a review</h2>
+        <p class="table-note">Tell other clients about your experience with Emily. Reviews are checked before they're posted on the site.</p>
+
+        <form id="review-form" class="booking-form">
+          <div class="field field--wide" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden" aria-hidden="true">
+            <label for="rv-website">Website</label>
+            <input id="rv-website" name="website" type="text" tabindex="-1" autocomplete="off">
+          </div>
+          <div class="field field--wide">
+            <label for="rv-name">Name</label>
+            <input id="rv-name" name="name" type="text" autocomplete="name" required maxlength="80">
+          </div>
+
+          <div class="field field--wide">
+            <label for="rv-rating-5">Rating</label>
+            <div class="star-rating" id="rv-rating">
+              <input type="radio" id="rv-rating-5" name="rating" value="5" required><label for="rv-rating-5" title="5 stars">&#9733;</label>
+              <input type="radio" id="rv-rating-4" name="rating" value="4"><label for="rv-rating-4" title="4 stars">&#9733;</label>
+              <input type="radio" id="rv-rating-3" name="rating" value="3"><label for="rv-rating-3" title="3 stars">&#9733;</label>
+              <input type="radio" id="rv-rating-2" name="rating" value="2"><label for="rv-rating-2" title="2 stars">&#9733;</label>
+              <input type="radio" id="rv-rating-1" name="rating" value="1"><label for="rv-rating-1" title="1 star">&#9733;</label>
+            </div>
+          </div>
+
+          <div class="field field--wide">
+            <label for="rv-text">Your review</label>
+            <textarea id="rv-text" name="text" rows="5" required maxlength="1000" placeholder="What was your experience like?"></textarea>
+          </div>
+
+          <button class="btn btn--primary field--wide" type="submit" id="rv-submit">&#9654; Submit Review</button>
+          <p class="recaptcha-disclosure field--wide">This site is protected by reCAPTCHA and the Google <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privacy Policy</a> and <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Terms of Service</a> apply.</p>
+          <p class="booking-status field--wide" id="rv-status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+</div>
+
+<script src="reviews.js"></script>
+</body>
+</html>

@@ -61,6 +61,31 @@
   .edit-form input { padding: 6px; border-radius: 5px; border: 1px solid #3a3a46; background: #1b1b22; color: #e8e8ec; }
   #refresh-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
   #empty-msg { color: #9a9aa5; padding: 20px 0; }
+  #tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+  #tabs button { background: #24242e; color: #9a9aa5; border: 1px solid #34343f; }
+  #tabs button.active { background: #6c5ce7; color: white; border-color: #6c5ce7; }
+  #app > section { display: none; }
+  #app > section.active { display: block; }
+  #clients-layout { display: flex; gap: 20px; align-items: flex-start; }
+  #client-search { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #3a3a46; background: #24242e; color: #e8e8ec; margin-bottom: 10px; }
+  #client-list { width: 260px; max-height: 70vh; overflow-y: auto; border: 1px solid #2e2e38; border-radius: 8px; flex-shrink: 0; }
+  #client-list .client-row { padding: 10px 12px; border-bottom: 1px solid #2e2e38; cursor: pointer; font-size: 0.88rem; }
+  #client-list .client-row:hover { background: #22222b; }
+  #client-list .client-row.selected { background: #2d2a4a; }
+  #client-list .client-row .cname { color: #e8e8ec; }
+  #client-list .client-row .cphone { color: #9a9aa5; font-size: 0.78rem; }
+  #client-count { color: #9a9aa5; font-size: 0.82rem; margin-bottom: 8px; }
+  #client-detail { flex: 1; min-width: 0; }
+  #client-detail-empty { color: #9a9aa5; padding: 40px 0; text-align: center; }
+  .client-header h2 { margin: 0 0 4px; font-size: 1.15rem; }
+  .client-header .cmeta { color: #9a9aa5; font-size: 0.85rem; margin-bottom: 16px; }
+  .client-header .cmeta a { color: #a29bfe; }
+  #appt-tabs { display: flex; gap: 4px; margin-bottom: 10px; }
+  #appt-tabs button { background: #24242e; color: #9a9aa5; border: 1px solid #34343f; padding: 6px 12px; font-size: 0.82rem; }
+  #appt-tabs button.active { background: #34343f; color: #e8e8ec; }
+  .appt-card { border: 1px solid #2e2e38; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; font-size: 0.85rem; }
+  .appt-card .awhen { color: #e8e8ec; font-weight: 600; }
+  .appt-card .asvc { color: #b8b8c2; }
 </style>
 </head>
 <body>
@@ -74,25 +99,44 @@
 </div>
 
 <div id="app">
-  <h1>Bookings</h1>
-  <div class="sub">Next 120 days. Only visible with the admin key.</div>
-  <div id="refresh-bar">
-    <button class="btn-ghost" id="refresh-btn">Refresh</button>
-    <button class="btn-ghost" id="lock-btn">Lock</button>
+  <h1>VividTints Admin</h1>
+  <div id="tabs">
+    <button class="active" id="tab-bookings-btn">Bookings</button>
+    <button id="tab-clients-btn">Clients</button>
   </div>
-  <div id="status"></div>
-  <table id="bookings-table">
-    <thead>
-      <tr>
-        <th>When</th>
-        <th>Booking</th>
-        <th>Details</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody id="bookings-body"></tbody>
-  </table>
-  <div id="empty-msg" style="display:none;">No upcoming bookings.</div>
+
+  <section id="tab-bookings" class="active">
+    <div class="sub">Next 120 days. Only visible with the admin key.</div>
+    <div id="refresh-bar">
+      <button class="btn-ghost" id="refresh-btn">Refresh</button>
+      <button class="btn-ghost" id="lock-btn">Lock</button>
+    </div>
+    <div id="status"></div>
+    <table id="bookings-table">
+      <thead>
+        <tr>
+          <th>When</th>
+          <th>Booking</th>
+          <th>Details</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="bookings-body"></tbody>
+    </table>
+    <div id="empty-msg" style="display:none;">No upcoming bookings.</div>
+  </section>
+
+  <section id="tab-clients">
+    <div class="sub">Clients derived from booking history. Search or browse A-Z.</div>
+    <input type="text" id="client-search" placeholder="Search clients…" />
+    <div id="client-count"></div>
+    <div id="clients-layout">
+      <div id="client-list"></div>
+      <div id="client-detail">
+        <div id="client-detail-empty">Select a client to view their appointments.</div>
+      </div>
+    </div>
+  </section>
 </div>
 
 <script>
@@ -112,6 +156,158 @@
   var emptyMsg = document.getElementById("empty-msg");
   var refreshBtn = document.getElementById("refresh-btn");
   var lockBtn = document.getElementById("lock-btn");
+
+  var tabBookingsBtn = document.getElementById("tab-bookings-btn");
+  var tabClientsBtn = document.getElementById("tab-clients-btn");
+  var tabBookings = document.getElementById("tab-bookings");
+  var tabClients = document.getElementById("tab-clients");
+  var clientSearch = document.getElementById("client-search");
+  var clientCount = document.getElementById("client-count");
+  var clientList = document.getElementById("client-list");
+  var clientDetail = document.getElementById("client-detail");
+
+  var allClients = [];
+  var clientsLoaded = false;
+  var selectedClientKey = null;
+  var apptFilter = "upcoming";
+
+  tabBookingsBtn.addEventListener("click", function () {
+    tabBookingsBtn.classList.add("active");
+    tabClientsBtn.classList.remove("active");
+    tabBookings.classList.add("active");
+    tabClients.classList.remove("active");
+  });
+
+  tabClientsBtn.addEventListener("click", function () {
+    tabClientsBtn.classList.add("active");
+    tabBookingsBtn.classList.remove("active");
+    tabClients.classList.add("active");
+    tabBookings.classList.remove("active");
+    if (!clientsLoaded) loadClients();
+  });
+
+  clientSearch.addEventListener("input", function () {
+    renderClientList(clientSearch.value.trim().toLowerCase());
+  });
+
+  function loadClients() {
+    clientList.innerHTML = "<div style='padding:12px; color:#9a9aa5;'>Loading…</div>";
+    var url = ENDPOINT + "?action=adminClients&key=" + encodeURIComponent(getKey());
+    fetch(url)
+      .then(function (r) { return r.json(); })
+      .then(function (json) {
+        if (!json.ok) {
+          if (json.error === "Unauthorized") { showLogin("Wrong admin key."); return; }
+          clientList.innerHTML = "<div style='padding:12px; color:#ff7675;'>" + (json.error || "Failed to load clients.") + "</div>";
+          return;
+        }
+        clientsLoaded = true;
+        allClients = json.clients || [];
+        renderClientList("");
+      })
+      .catch(function () {
+        clientList.innerHTML = "<div style='padding:12px; color:#ff7675;'>Couldn't reach the booking system.</div>";
+      });
+  }
+
+  function renderClientList(filterText) {
+    var filtered = allClients.filter(function (c) {
+      if (!filterText) return true;
+      return c.name.toLowerCase().indexOf(filterText) !== -1 ||
+        (c.phone || "").indexOf(filterText) !== -1;
+    });
+
+    clientCount.textContent = "You have " + allClients.length + " client" + (allClients.length === 1 ? "" : "s") +
+      (filterText ? " (" + filtered.length + " shown)" : "");
+
+    clientList.innerHTML = "";
+    if (!filtered.length) {
+      clientList.innerHTML = "<div style='padding:12px; color:#9a9aa5;'>No clients found.</div>";
+      return;
+    }
+
+    filtered.forEach(function (c) {
+      var row = document.createElement("div");
+      row.className = "client-row" + (c.name.toLowerCase() === selectedClientKey ? " selected" : "");
+      var nameEl = document.createElement("div");
+      nameEl.className = "cname";
+      nameEl.textContent = c.name;
+      var phoneEl = document.createElement("div");
+      phoneEl.className = "cphone";
+      phoneEl.textContent = c.phone || "No phone on file";
+      row.appendChild(nameEl);
+      row.appendChild(phoneEl);
+      row.addEventListener("click", function () {
+        selectedClientKey = c.name.toLowerCase();
+        apptFilter = "upcoming";
+        renderClientList(clientSearch.value.trim().toLowerCase());
+        renderClientDetail(c);
+      });
+      clientList.appendChild(row);
+    });
+  }
+
+  function renderClientDetail(c) {
+    clientDetail.innerHTML = "";
+
+    var header = document.createElement("div");
+    header.className = "client-header";
+    var h2 = document.createElement("h2");
+    h2.textContent = c.name;
+    var meta = document.createElement("div");
+    meta.className = "cmeta";
+    meta.textContent = (c.phone || "No phone on file") + (c.email && c.email !== "(not provided)" ? " · " + c.email : "");
+    header.appendChild(h2);
+    header.appendChild(meta);
+    clientDetail.appendChild(header);
+
+    var apptTabs = document.createElement("div");
+    apptTabs.id = "appt-tabs";
+    var upcoming = c.appointments.filter(function (a) { return a.status === "upcoming"; });
+    var past = c.appointments.filter(function (a) { return a.status === "past"; });
+
+    var upBtn = document.createElement("button");
+    upBtn.textContent = "Upcoming (" + upcoming.length + ")";
+    var pastBtn = document.createElement("button");
+    pastBtn.textContent = "Past (" + past.length + ")";
+    apptTabs.appendChild(upBtn);
+    apptTabs.appendChild(pastBtn);
+    clientDetail.appendChild(apptTabs);
+
+    var list = document.createElement("div");
+    clientDetail.appendChild(list);
+
+    function paint() {
+      upBtn.className = apptFilter === "upcoming" ? "active" : "";
+      pastBtn.className = apptFilter === "past" ? "active" : "";
+      var appts = apptFilter === "upcoming" ? upcoming : past;
+      list.innerHTML = "";
+      if (!appts.length) {
+        var empty = document.createElement("div");
+        empty.style.color = "#9a9aa5";
+        empty.textContent = apptFilter === "upcoming" ? "No upcoming appointments." : "No past appointments.";
+        list.appendChild(empty);
+        return;
+      }
+      appts.forEach(function (a) {
+        var card = document.createElement("div");
+        card.className = "appt-card";
+        var when = document.createElement("div");
+        when.className = "awhen";
+        when.textContent = fmtWhen(a.start);
+        var svc = document.createElement("div");
+        svc.className = "asvc";
+        svc.textContent = a.title;
+        card.appendChild(when);
+        card.appendChild(svc);
+        list.appendChild(card);
+      });
+    }
+
+    upBtn.addEventListener("click", function () { apptFilter = "upcoming"; paint(); });
+    pastBtn.addEventListener("click", function () { apptFilter = "past"; paint(); });
+    paint();
+  }
 
   function setStatus(state, msg) {
     statusEl.textContent = msg || "";

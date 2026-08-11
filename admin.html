@@ -86,6 +86,31 @@
   .appt-card { border: 1px solid #2e2e38; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; font-size: 0.85rem; }
   .appt-card .awhen { color: #e8e8ec; font-weight: 600; }
   .appt-card .asvc { color: #b8b8c2; }
+  #day-bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+  #day-date { padding: 8px; border-radius: 6px; border: 1px solid #3a3a46; background: #24242e; color: #e8e8ec; }
+  .day-heading { font-size: 0.95rem; letter-spacing: 0.04em; text-transform: uppercase; color: #9a9aa5; margin: 18px 0 10px; }
+  .slot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 6px; }
+  .slot {
+    text-align: center; padding: 7px 4px; font-size: 0.8rem;
+    border: 1px solid #3a3a46; border-radius: 6px; background: #24242e; color: #e8e8ec;
+  }
+  .slot--busy { color: #6f6f7a; background: #1f1f27; border-color: #2e2e38; text-decoration: line-through; }
+  .day-legend { color: #9a9aa5; font-size: 0.8rem; margin-top: 10px; }
+  .day-legend .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin: 0 5px 0 14px; vertical-align: middle; }
+  .day-legend .dot:first-child { margin-left: 0; }
+  .dot--open { background: #6c5ce7; }
+  .dot--busy { background: #4b4b57; }
+  .booked-row {
+    display: flex; gap: 14px; align-items: baseline; flex-wrap: wrap;
+    border: 1px solid #2e2e38; border-left: 3px solid #6c5ce7; border-radius: 8px;
+    padding: 10px 12px; margin-bottom: 8px; font-size: 0.88rem;
+  }
+  .booked-row .btime { font-weight: 600; color: #e8e8ec; min-width: 150px; }
+  .booked-row .bname { color: #a29bfe; font-weight: 600; }
+  .booked-row .bsvc { color: #b8b8c2; }
+  .booked-row .bphone { color: #9a9aa5; font-size: 0.82rem; }
+  .booked-row .bnotes { flex-basis: 100%; color: #9a9aa5; font-size: 0.82rem; white-space: pre-line; }
+  .day-empty { color: #9a9aa5; padding: 14px 0; }
 </style>
 </head>
 <body>
@@ -102,6 +127,7 @@
   <h1>VividTints Admin</h1>
   <div id="tabs">
     <button class="active" id="tab-bookings-btn">Bookings</button>
+    <button id="tab-day-btn">Day view</button>
     <button id="tab-clients-btn">Clients</button>
   </div>
 
@@ -124,6 +150,21 @@
       <tbody id="bookings-body"></tbody>
     </table>
     <div id="empty-msg" style="display:none;">No upcoming bookings.</div>
+  </section>
+
+  <section id="tab-day">
+    <div class="sub">One day at a time — open slots, then who you have booked. Only visible with the admin key.</div>
+    <div id="day-bar">
+      <button class="btn-ghost" id="day-prev">&#9664; Prev</button>
+      <input type="date" id="day-date" />
+      <button class="btn-ghost" id="day-next">Next &#9654;</button>
+      <button class="btn-ghost" id="day-today">Today</button>
+    </div>
+    <p class="day-heading" id="day-title"></p>
+    <div id="day-slots"></div>
+    <p class="day-legend"><span class="dot dot--open"></span> open <span class="dot dot--busy"></span> booked</p>
+    <p class="day-heading">Booked this day</p>
+    <div id="day-booked"></div>
   </section>
 
   <section id="tab-clients">
@@ -158,9 +199,18 @@
   var lockBtn = document.getElementById("lock-btn");
 
   var tabBookingsBtn = document.getElementById("tab-bookings-btn");
+  var tabDayBtn = document.getElementById("tab-day-btn");
   var tabClientsBtn = document.getElementById("tab-clients-btn");
   var tabBookings = document.getElementById("tab-bookings");
+  var tabDay = document.getElementById("tab-day");
   var tabClients = document.getElementById("tab-clients");
+  var dayDate = document.getElementById("day-date");
+  var dayPrev = document.getElementById("day-prev");
+  var dayNext = document.getElementById("day-next");
+  var dayToday = document.getElementById("day-today");
+  var dayTitle = document.getElementById("day-title");
+  var daySlots = document.getElementById("day-slots");
+  var dayBooked = document.getElementById("day-booked");
   var clientSearch = document.getElementById("client-search");
   var clientCount = document.getElementById("client-count");
   var clientList = document.getElementById("client-list");
@@ -170,21 +220,199 @@
   var clientsLoaded = false;
   var selectedClientKey = null;
   var apptFilter = "upcoming";
+  var allBookings = [];
+
+  /* Fallback lengths, matching the Book Now menu in index.html. Only used when
+     the booking itself doesn't carry an end time (e.g. appointments imported
+     from SalonLofts run longer than the menu default). */
+  var SERVICE_MINUTES = {
+    "Consultation": 15,
+    "Extensions Consultation": 15,
+    "Children's Cut & Style": 30,
+    "Shampoo & Style": 30,
+    "Women's Cut & Style": 45,
+    "Fairy Hair (Hair Tinsel)": 45,
+    "Face Framing Highlights": 60,
+    "Hair Gloss": 60,
+    "Formal Styling Trial Run": 60,
+    "Dances, Evening Event, Special Occasion": 60,
+    "Partial Highlights + Cut + Style": 120,
+    "All Over Color + Cut + Style": 120,
+    "Color Retouch + Cut + Style": 120,
+    "Custom Creative Color": 180,
+    "Full Highlights + Cut + Style": 180,
+    "Platinum Blonde": 180,
+    "Extension Maintenance": 180,
+    "Balayage + Cut + Style": 210,
+    "All Over Color + Highlights + Cut + Style": 210,
+    "Color Retouch + Highlights + Cut + Style": 210,
+    "Corrective Color": 240
+  };
+
+  function selectTab(btn, section) {
+    [tabBookingsBtn, tabDayBtn, tabClientsBtn].forEach(function (b) { b.classList.remove("active"); });
+    [tabBookings, tabDay, tabClients].forEach(function (s) { s.classList.remove("active"); });
+    btn.classList.add("active");
+    section.classList.add("active");
+  }
 
   tabBookingsBtn.addEventListener("click", function () {
-    tabBookingsBtn.classList.add("active");
-    tabClientsBtn.classList.remove("active");
-    tabBookings.classList.add("active");
-    tabClients.classList.remove("active");
+    selectTab(tabBookingsBtn, tabBookings);
+  });
+
+  tabDayBtn.addEventListener("click", function () {
+    selectTab(tabDayBtn, tabDay);
+    if (!dayDate.value) dayDate.value = dateInputValue(new Date());
+    renderDay();
   });
 
   tabClientsBtn.addEventListener("click", function () {
-    tabClientsBtn.classList.add("active");
-    tabBookingsBtn.classList.remove("active");
-    tabClients.classList.add("active");
-    tabBookings.classList.remove("active");
+    selectTab(tabClientsBtn, tabClients);
     if (!clientsLoaded) loadClients();
   });
+
+  dayDate.addEventListener("change", renderDay);
+  dayPrev.addEventListener("click", function () { shiftDay(-1); });
+  dayNext.addEventListener("click", function () { shiftDay(1); });
+  dayToday.addEventListener("click", function () {
+    dayDate.value = dateInputValue(new Date());
+    renderDay();
+  });
+
+  function dateInputValue(d) {
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+
+  function shiftDay(delta) {
+    var d = dayDate.value ? new Date(dayDate.value + "T00:00:00") : new Date();
+    d.setDate(d.getDate() + delta);
+    dayDate.value = dateInputValue(d);
+    renderDay();
+  }
+
+  /* Bookings carry "Client: …\nPhone: …\nService: …\nNotes: …" in the description
+     (same shape the Clients tab and the client accounts parse). Fall back to the
+     event title, which is always "Service - Client Name". */
+  function parseBooking(bk) {
+    var desc = bk.description || "";
+    function field(label) {
+      var m = desc.match(new RegExp("^" + label + ":[ \\t]*(.*)$", "m"));
+      return m ? m[1].trim() : "";
+    }
+    var title = bk.title || "";
+    var dashAt = title.lastIndexOf(" - ");
+    var service = field("Service") || (dashAt !== -1 ? title.slice(0, dashAt) : title);
+    var name = field("Client") || (dashAt !== -1 ? title.slice(dashAt + 3) : "");
+    var notes = field("Notes");
+    if (notes === "(none)") notes = "";
+
+    var start = new Date(bk.start);
+    var end = bk.end ? new Date(bk.end) : null;
+    if (!end || isNaN(end.getTime()) || end <= start) {
+      var mins = SERVICE_MINUTES[service] || 60;
+      end = new Date(start.getTime() + mins * 60000);
+    }
+
+    return {
+      start: start,
+      end: end,
+      name: name,
+      service: service,
+      phone: field("Phone"),
+      email: field("Email"),
+      notes: notes
+    };
+  }
+
+  function fmtTime(d) {
+    return d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+  }
+
+  function renderDay() {
+    if (!dayDate.value) dayDate.value = dateInputValue(new Date());
+    var dateKey = dayDate.value;
+    var d = new Date(dateKey + "T00:00:00");
+
+    dayTitle.textContent = d.toLocaleDateString("en-US", {
+      weekday: "long", month: "long", day: "numeric", year: "numeric"
+    });
+
+    daySlots.innerHTML = "";
+    dayBooked.innerHTML = "";
+
+    var dayBookings = allBookings
+      .map(parseBooking)
+      .filter(function (b) { return dateInputValue(b.start) === dateKey; })
+      .sort(function (a, b) { return a.start - b.start; });
+
+    var weekday = d.getDay();
+    if (weekday === 1 || weekday === 2) {
+      var closed = document.createElement("p");
+      closed.className = "day-empty";
+      closed.textContent = "Closed — VividTints books Wednesday through Sunday.";
+      daySlots.appendChild(closed);
+    } else {
+      var grid = document.createElement("div");
+      grid.className = "slot-grid";
+      for (var totalMin = 6 * 60; totalMin <= 17 * 60; totalMin += 15) {
+        var slotStart = new Date(d.getFullYear(), d.getMonth(), d.getDate(), Math.floor(totalMin / 60), totalMin % 60);
+        var slotEnd = new Date(slotStart.getTime() + 15 * 60000);
+        var busy = dayBookings.some(function (b) {
+          return slotStart < b.end && slotEnd > b.start;
+        });
+        var cell = document.createElement("div");
+        cell.className = "slot" + (busy ? " slot--busy" : "");
+        cell.textContent = fmtTime(slotStart);
+        grid.appendChild(cell);
+      }
+      daySlots.appendChild(grid);
+    }
+
+    if (!dayBookings.length) {
+      var none = document.createElement("p");
+      none.className = "day-empty";
+      none.textContent = "Nobody booked this day.";
+      dayBooked.appendChild(none);
+      return;
+    }
+
+    dayBookings.forEach(function (b) {
+      var row = document.createElement("div");
+      row.className = "booked-row";
+
+      var time = document.createElement("span");
+      time.className = "btime";
+      time.textContent = fmtTime(b.start) + " – " + fmtTime(b.end);
+
+      var name = document.createElement("span");
+      name.className = "bname";
+      name.textContent = b.name || "(no name on booking)";
+
+      var svc = document.createElement("span");
+      svc.className = "bsvc";
+      svc.textContent = b.service;
+
+      row.appendChild(time);
+      row.appendChild(name);
+      row.appendChild(svc);
+
+      if (b.phone && b.phone !== "(not provided)") {
+        var phone = document.createElement("span");
+        phone.className = "bphone";
+        phone.textContent = b.phone;
+        row.appendChild(phone);
+      }
+
+      if (b.notes) {
+        var notes = document.createElement("span");
+        notes.className = "bnotes";
+        notes.textContent = b.notes;
+        row.appendChild(notes);
+      }
+
+      dayBooked.appendChild(row);
+    });
+  }
 
   clientSearch.addEventListener("input", function () {
     renderClientList(clientSearch.value.trim().toLowerCase());
@@ -375,6 +603,9 @@
   }
 
   function renderBookings(bookings) {
+    allBookings = bookings;
+    if (tabDay.classList.contains("active")) renderDay();
+
     body.innerHTML = "";
     if (!bookings.length) {
       emptyMsg.style.display = "block";
@@ -563,6 +794,8 @@
 
   refreshBtn.addEventListener("click", loadBookings);
   lockBtn.addEventListener("click", function () { showLogin(""); });
+
+  dayDate.value = dateInputValue(new Date());
 
   if (getKey()) {
     showApp();

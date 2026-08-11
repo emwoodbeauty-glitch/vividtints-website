@@ -155,6 +155,29 @@
     statusEl.setAttribute("data-state", state);
   }
 
+  /* ---------- Prefill from client account session, if logged in ---------- */
+  var vtToken = localStorage.getItem("vt-client-token");
+  if (form && vtToken) {
+    fetch(BOOKING_ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({ action: "myProfile", token: vtToken })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (json) {
+        if (!json.ok) return;
+        var nameEl = document.getElementById("bf-name");
+        var emailEl = document.getElementById("bf-email");
+        var phoneEl = document.getElementById("bf-phone");
+        var carrierEl = document.getElementById("bf-carrier");
+        if (emailEl && json.email) emailEl.value = json.email;
+        if (nameEl && json.name) nameEl.value = json.name;
+        if (phoneEl && json.phone) phoneEl.value = json.phone;
+        if (carrierEl && json.carrier) carrierEl.value = json.carrier;
+      })
+      .catch(function () {});
+  }
+
   var renderDaySchedule;
   var renderCalendar;
   var dateInput = document.getElementById("bf-date");

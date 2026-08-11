@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>VividTints — My Account</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, Segoe UI, Arial, sans-serif;
+    background: #1b1b22;
+    color: #e8e8ec;
+    margin: 0;
+    padding: 24px;
+  }
+  h1 { font-size: 1.3rem; margin: 0 0 4px; }
+  h2 { font-size: 1.05rem; margin: 24px 0 10px; }
+  .sub { color: #9a9aa5; font-size: 0.85rem; margin-bottom: 20px; }
+  #login-box, #verify-box {
+    max-width: 340px;
+    margin: 80px auto;
+    background: #24242e;
+    padding: 24px;
+    border-radius: 10px;
+    border: 1px solid #34343f;
+  }
+  #verify-box { display: none; }
+  #login-box input, #verify-box input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 6px;
+    border: 1px solid #3a3a46;
+    background: #1b1b22;
+    color: #e8e8ec;
+  }
+  button {
+    cursor: pointer;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+  }
+  .btn-primary { background: #6c5ce7; color: white; }
+  .btn-primary:hover { background: #5a4bd1; }
+  .btn-danger { background: #e74c3c; color: white; }
+  .btn-danger:hover { background: #c0392b; }
+  .btn-ghost { background: #34343f; color: #e8e8ec; }
+  .btn-ghost:hover { background: #40404d; }
+  a.btn-link { color: #a29bfe; text-decoration: none; font-size: 0.88rem; }
+  #login-status, #verify-status { margin-top: 10px; font-size: 0.85rem; }
+  #login-status[data-state="error"], #verify-status[data-state="error"] { color: #ff7675; }
+  #login-status[data-state="ok"], #verify-status[data-state="ok"] { color: #55efc4; }
+  #app { display: none; max-width: 700px; margin: 0 auto; }
+  #top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  #status { min-height: 20px; margin-bottom: 12px; font-size: 0.9rem; }
+  #status[data-state="error"] { color: #ff7675; }
+  #status[data-state="ok"] { color: #55efc4; }
+  #status[data-state="pending"] { color: #9a9aa5; }
+  .appt-card { border: 1px solid #2e2e38; border-radius: 8px; padding: 12px 14px; margin-bottom: 10px; font-size: 0.9rem; }
+  .appt-card .awhen { color: #e8e8ec; font-weight: 600; }
+  .appt-card .asvc { color: #b8b8c2; margin-bottom: 8px; }
+  .row-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .edit-form { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+  .edit-form input { padding: 6px; border-radius: 5px; border: 1px solid #3a3a46; background: #1b1b22; color: #e8e8ec; }
+  #empty-upcoming, #empty-past { color: #9a9aa5; padding: 10px 0; }
+  #past-list .appt-card { opacity: 0.7; }
+  #book-new { margin: 20px 0; }
+</style>
+</head>
+<body>
+
+<div id="login-box">
+  <h1>VividTints — My Account</h1>
+  <div class="sub">Enter your email to get a one-time login code.</div>
+  <input type="email" id="email-input" placeholder="you@example.com" autocomplete="email" />
+  <button class="btn-primary" id="send-code-btn" style="width:100%">Send code</button>
+  <div id="login-status"></div>
+</div>
+
+<div id="verify-box">
+  <h1>Check your email</h1>
+  <div class="sub" id="verify-sub"></div>
+  <input type="text" id="code-input" placeholder="6-digit code" autocomplete="one-time-code" inputmode="numeric" />
+  <button class="btn-primary" id="verify-btn" style="width:100%">Verify</button>
+  <div id="verify-status"></div>
+  <div style="margin-top:12px;"><a href="#" class="btn-link" id="resend-link">Use a different email</a></div>
+</div>
+
+<div id="app">
+  <div id="top-bar">
+    <h1>My Account</h1>
+    <button class="btn-ghost" id="logout-btn">Log out</button>
+  </div>
+  <div class="sub" id="account-email"></div>
+  <div id="status"></div>
+
+  <div id="book-new"><a href="index.html#book" class="btn-primary" style="text-decoration:none; display:inline-block;">+ Book a new appointment</a></div>
+
+  <h2>Upcoming</h2>
+  <div id="upcoming-list"></div>
+  <div id="empty-upcoming" style="display:none;">No upcoming appointments.</div>
+
+  <h2>Past</h2>
+  <div id="past-list"></div>
+  <div id="empty-past" style="display:none;">No past appointments yet.</div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var ENDPOINT = "https://script.google.com/macros/s/AKfycbzOKfhOsh8c7P_x21M0F6-eEXE_Rmt2lX2oXR_StaYyvPWElu30CW0-ML_w4NEsuqzeQQ/exec";
+  var TOKEN_KEY = "vt-client-token";
+  var EMAIL_KEY = "vt-client-email";
+
+  var loginBox = document.getElementById("login-box");
+  var verifyBox = document.getElementById("verify-box");
+  var app = document.getElementById("app");
+
+  var emailInput = document.getElementById("email-input");
+  var sendCodeBtn = document.getElementById("send-code-btn");
+  var loginStatus = document.getElementById("login-status");
+
+  var verifySub = document.getElementById("verify-sub");
+  var codeInput = document.getElementById("code-input");
+  var verifyBtn = document.getElementById("verify-btn");
+  var verifyStatus = document.getElementById("verify-status");
+  var resendLink = document.getElementById("resend-link");
+
+  var logoutBtn = document.getElementById("logout-btn");
+  var accountEmail = document.getElementById("account-email");
+  var statusEl = document.getElementById("status");
+  var upcomingList = document.getElementById("upcoming-list");
+  var pastList = document.getElementById("past-list");
+  var emptyUpcoming = document.getElementById("empty-upcoming");
+  var emptyPast = document.getElementById("empty-past");
+
+  var pendingEmail = "";
+
+  function setLoginStatus(state, msg) {
+    loginStatus.textContent = msg || "";
+    loginStatus.setAttribute("data-state", state || "");
+  }
+  function setVerifyStatus(state, msg) {
+    verifyStatus.textContent = msg || "";
+    verifyStatus.setAttribute("data-state", state || "");
+  }
+  function setStatus(state, msg) {
+    statusEl.textContent = msg || "";
+    statusEl.setAttribute("data-state", state || "");
+  }
+
+  function getToken() {
+    return localStorage.getItem(TOKEN_KEY);
+  }
+
+  function post(payload) {
+    return fetch(ENDPOINT, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    }).then(function (r) { return r.json(); });
+  }
+
+  function showLoggedOut() {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(EMAIL_KEY);
+    app.style.display = "none";
+    verifyBox.style.display = "none";
+    loginBox.style.display = "block";
+  }
+
+  function showApp() {
+    loginBox.style.display = "none";
+    verifyBox.style.display = "none";
+    app.style.display = "block";
+    accountEmail.textContent = localStorage.getItem(EMAIL_KEY) || "";
+    loadBookings();
+  }
+
+  sendCodeBtn.addEventListener("click", function () {
+    var email = emailInput.value.trim();
+    if (!email || email.indexOf("@") === -1) {
+      setLoginStatus("error", "Enter a valid email.");
+      return;
+    }
+    sendCodeBtn.disabled = true;
+    setLoginStatus("pending", "Sending code…");
+    post({ action: "requestLoginCode", email: email })
+      .then(function (json) {
+        sendCodeBtn.disabled = false;
+        if (!json.ok) {
+          setLoginStatus("error", json.error || "Couldn't send code.");
+          return;
+        }
+        pendingEmail = email;
+        verifySub.textContent = "We sent a code to " + email + ".";
+        loginBox.style.display = "none";
+        verifyBox.style.display = "block";
+        codeInput.value = "";
+        codeInput.focus();
+      })
+      .catch(function () {
+        sendCodeBtn.disabled = false;
+        setLoginStatus("error", "Couldn't reach the booking system.");
+      });
+  });
+
+  emailInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") sendCodeBtn.click();
+  });
+
+  verifyBtn.addEventListener("click", function () {
+    var code = codeInput.value.trim();
+    if (!code) return;
+    verifyBtn.disabled = true;
+    setVerifyStatus("pending", "Checking…");
+    post({ action: "verifyLoginCode", email: pendingEmail, code: code })
+      .then(function (json) {
+        verifyBtn.disabled = false;
+        if (!json.ok) {
+          setVerifyStatus("error", json.error || "Couldn't verify code.");
+          return;
+        }
+        localStorage.setItem(TOKEN_KEY, json.token);
+        localStorage.setItem(EMAIL_KEY, json.email);
+        showApp();
+      })
+      .catch(function () {
+        verifyBtn.disabled = false;
+        setVerifyStatus("error", "Couldn't reach the booking system.");
+      });
+  });
+
+  codeInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") verifyBtn.click();
+  });
+
+  resendLink.addEventListener("click", function (e) {
+    e.preventDefault();
+    verifyBox.style.display = "none";
+    loginBox.style.display = "block";
+    setVerifyStatus("", "");
+  });
+
+  logoutBtn.addEventListener("click", function () {
+    var token = getToken();
+    if (token) post({ action: "logout", token: token }).catch(function () {});
+    showLoggedOut();
+  });
+
+  function fmtWhen(iso) {
+    var d = new Date(iso);
+    return d.toLocaleString("en-US", {
+      weekday: "short", month: "short", day: "numeric",
+      hour: "numeric", minute: "2-digit"
+    });
+  }
+
+  function toDateInputValue(iso) {
+    var d = new Date(iso);
+    return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+  }
+
+  function toTimeInputValue(iso) {
+    var d = new Date(iso);
+    return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0");
+  }
+
+  function loadBookings() {
+    setStatus("pending", "Loading your appointments…");
+    var token = getToken();
+    post({ action: "myBookings", token: token })
+      .then(function (json) {
+        if (!json.ok) {
+          if (json.error && json.error.indexOf("log in") !== -1) { showLoggedOut(); return; }
+          setStatus("error", json.error || "Couldn't load your appointments.");
+          return;
+        }
+        setStatus("", "");
+        renderBookings(json.bookings || []);
+      })
+      .catch(function () {
+        setStatus("error", "Couldn't reach the booking system.");
+      });
+  }
+
+  function renderBookings(bookings) {
+    var upcoming = bookings.filter(function (b) { return b.status === "upcoming"; });
+    var past = bookings.filter(function (b) { return b.status === "past"; });
+
+    upcomingList.innerHTML = "";
+    emptyUpcoming.style.display = upcoming.length ? "none" : "block";
+    upcoming.forEach(function (bk) { upcomingList.appendChild(buildUpcomingCard(bk)); });
+
+    pastList.innerHTML = "";
+    emptyPast.style.display = past.length ? "none" : "block";
+    past.forEach(function (bk) {
+      var card = document.createElement("div");
+      card.className = "appt-card";
+      var when = document.createElement("div");
+      when.className = "awhen";
+      when.textContent = fmtWhen(bk.start);
+      var svc = document.createElement("div");
+      svc.className = "asvc";
+      svc.textContent = bk.service;
+      card.appendChild(when);
+      card.appendChild(svc);
+      pastList.appendChild(card);
+    });
+  }
+
+  function buildUpcomingCard(bk) {
+    var card = document.createElement("div");
+    card.className = "appt-card";
+
+    var when = document.createElement("div");
+    when.className = "awhen";
+    when.textContent = fmtWhen(bk.start);
+    var svc = document.createElement("div");
+    svc.className = "asvc";
+    svc.textContent = bk.service;
+    card.appendChild(when);
+    card.appendChild(svc);
+
+    var actionsWrap = document.createElement("div");
+    actionsWrap.className = "row-actions";
+    var moveBtn = document.createElement("button");
+    moveBtn.className = "btn-ghost";
+    moveBtn.textContent = "Reschedule";
+    var cancelBtn = document.createElement("button");
+    cancelBtn.className = "btn-danger";
+    cancelBtn.textContent = "Cancel";
+    actionsWrap.appendChild(moveBtn);
+    actionsWrap.appendChild(cancelBtn);
+    card.appendChild(actionsWrap);
+
+    moveBtn.addEventListener("click", function () {
+      openRescheduleForm(card, bk, actionsWrap);
+    });
+    cancelBtn.addEventListener("click", function () {
+      openCancelConfirm(card, bk, actionsWrap);
+    });
+
+    return card;
+  }
+
+  function openRescheduleForm(card, bk, actionsWrap) {
+    actionsWrap.style.display = "none";
+
+    var form = document.createElement("div");
+    form.className = "edit-form";
+
+    var dateInput = document.createElement("input");
+    dateInput.type = "date";
+    dateInput.value = toDateInputValue(bk.start);
+
+    var timeInput = document.createElement("input");
+    timeInput.type = "time";
+    timeInput.value = toTimeInputValue(bk.start);
+
+    var saveBtn = document.createElement("button");
+    saveBtn.className = "btn-primary";
+    saveBtn.textContent = "Save";
+
+    var cancelEditBtn = document.createElement("button");
+    cancelEditBtn.className = "btn-ghost";
+    cancelEditBtn.textContent = "×";
+
+    form.appendChild(dateInput);
+    form.appendChild(timeInput);
+    form.appendChild(saveBtn);
+    form.appendChild(cancelEditBtn);
+    card.appendChild(form);
+
+    cancelEditBtn.addEventListener("click", function () {
+      form.remove();
+      actionsWrap.style.display = "";
+    });
+
+    saveBtn.addEventListener("click", function () {
+      if (!dateInput.value || !timeInput.value) return;
+      saveBtn.disabled = true;
+      setStatus("pending", "Moving your appointment…");
+      post({ action: "myReschedule", token: getToken(), eventId: bk.id, date: dateInput.value, time: timeInput.value })
+        .then(function (json) {
+          if (!json.ok) {
+            if (json.error && json.error.indexOf("log in") !== -1) { showLoggedOut(); return; }
+            setStatus("error", json.error || "Couldn't move that appointment.");
+            saveBtn.disabled = false;
+            return;
+          }
+          setStatus("ok", "Appointment moved — check your email for confirmation.");
+          loadBookings();
+        })
+        .catch(function () {
+          setStatus("error", "Couldn't reach the booking system.");
+          saveBtn.disabled = false;
+        });
+    });
+  }
+
+  function openCancelConfirm(card, bk, actionsWrap) {
+    actionsWrap.style.display = "none";
+
+    var confirmWrap = document.createElement("div");
+    confirmWrap.className = "edit-form";
+
+    var label = document.createElement("span");
+    label.textContent = "Cancel this appointment?";
+    label.style.fontSize = "0.85rem";
+
+    var yesBtn = document.createElement("button");
+    yesBtn.className = "btn-danger";
+    yesBtn.textContent = "Yes, cancel it";
+
+    var noBtn = document.createElement("button");
+    noBtn.className = "btn-ghost";
+    noBtn.textContent = "No";
+
+    confirmWrap.appendChild(label);
+    confirmWrap.appendChild(yesBtn);
+    confirmWrap.appendChild(noBtn);
+    card.appendChild(confirmWrap);
+
+    noBtn.addEventListener("click", function () {
+      confirmWrap.remove();
+      actionsWrap.style.display = "";
+    });
+
+    yesBtn.addEventListener("click", function () {
+      yesBtn.disabled = true;
+      noBtn.disabled = true;
+      setStatus("pending", "Cancelling…");
+      post({ action: "myCancel", token: getToken(), eventId: bk.id })
+        .then(function (json) {
+          if (!json.ok) {
+            if (json.error && json.error.indexOf("log in") !== -1) { showLoggedOut(); return; }
+            setStatus("error", json.error || "Couldn't cancel that appointment.");
+            return;
+          }
+          setStatus("ok", "Appointment cancelled.");
+          loadBookings();
+        })
+        .catch(function () {
+          setStatus("error", "Couldn't reach the booking system.");
+        });
+    });
+  }
+
+  if (getToken()) {
+    showApp();
+  }
+})();
+</script>
+</body>
+</html>
